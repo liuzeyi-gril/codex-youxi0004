@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10152e">
+  <title>灵猫寻星火</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient-glow ambient-glow-a" aria-hidden="true"></div>
+  <div class="ambient-glow ambient-glow-b" aria-hidden="true"></div>
+
+  <main class="game-frame">
+    <div class="stage-area" id="stageArea">
+      <section class="stage-shell" aria-label="灵猫寻星火游戏区域">
+        <div class="stage" id="gameStage">
+          <canvas id="gameCanvas" width="1280" height="720" aria-label="横版冒险游戏画面"></canvas>
+
+          <div class="hud" id="hud" hidden>
+            <div class="hud-left">
+              <div class="hearts" id="hearts" aria-label="生命值"></div>
+              <div class="level-badge">
+                <span id="hudLevel">第一关</span>
+                <i></i>
+                <span id="hudLevelName">晨曦森林</span>
+              </div>
+            </div>
+            <div class="hud-right">
+              <div class="hud-chip shard-chip" title="已收集星火">
+                <span class="hud-star">✦</span>
+                <span id="hudShards">0 / 3</span>
+              </div>
+              <div class="hud-chip score-chip">
+                <span>得分</span>
+                <strong id="hudScore">0</strong>
+              </div>
+              <button class="hud-button" id="pauseButton" type="button" aria-label="暂停游戏" title="暂停（Esc）">Ⅱ</button>
+              <button class="hud-button sound-button" id="muteButton" type="button" aria-label="关闭音效" title="音效（M）">♪</button>
+            </div>
+          </div>
+
+          <div class="boss-bar" id="bossBar" hidden>
+            <div class="boss-bar-head">
+              <span>暗影巨兽 · 夜嚎</span>
+              <span id="bossPhase">第一阶段</span>
+            </div>
+            <div class="boss-bar-track"><div id="bossBarFill"></div></div>
+          </div>
+
+          <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+          <section class="screen screen-menu is-active" id="screenMenu">
+            <div class="screen-inner menu-inner">
+              <div class="menu-emblem" aria-hidden="true">✦</div>
+              <p class="eyebrow">东方奇幻 · 横版冒险</p>
+              <h1>灵猫寻星火</h1>
+              <p class="subtitle">穿越十三重秘境，点亮漫漫长夜</p>
+              <div class="menu-actions">
+                <button class="btn btn-primary" id="startButton" type="button">开始冒险</button>
+                <button class="btn btn-secondary" id="continueButton" type="button" hidden>继续冒险</button>
+                <button class="btn btn-ghost" id="helpButton" type="button">玩法说明</button>
+              </div>
+              <div class="menu-meta">
+                <span>最高得分 <strong id="bestScore">0</strong></span>
+                <button class="text-button" id="menuSoundButton" type="button">音效：开</button>
+              </div>
+              <div class="help-panel" id="helpPanel" hidden>
+                <p>穿过十三重秘境，收集三十九枚星火，最终击败盘踞天穹的暗影巨兽。</p>
+                <div class="key-guide">
+                  <span><b>移动</b> ← → / A D</span>
+                  <span><b>跳跃</b> 空格 / W / ↑</span>
+                  <span><b>攻击</b> J / Z</span>
+                  <span><b>冲刺</b> Shift / L</span>
+                </div>
+                <p class="touch-note">手机玩家使用画面下方的触控按键。</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen screen-intro" id="screenIntro">
+            <div class="intro-card">
+              <p id="introKicker">第一关</p>
+              <h2 id="introTitle">晨曦森林</h2>
+              <span class="intro-rule"></span>
+              <p id="introHint">收集三枚星火，唤醒终点星门</p>
+            </div>
+          </section>
+
+          <section class="screen screen-pause" id="screenPause">
+            <div class="panel compact-panel">
+              <p class="eyebrow">灯笼微亮</p>
+              <h2>暂停</h2>
+              <div class="stat-line"><span>当前得分</span><strong id="pauseScore">0</strong></div>
+              <div class="button-stack">
+                <button class="btn btn-primary" id="resumeButton" type="button">继续旅程</button>
+                <button class="btn btn-secondary" id="retryPauseButton" type="button">重试本关</button>
+                <button class="btn btn-ghost" id="menuPauseButton" type="button">返回标题</button>
+              </div>
+              <p class="small-hint">按 Esc 或 P 继续</p>
+            </div>
+          </section>
+
+          <section class="screen screen-clear" id="screenLevelClear">
+            <div class="panel result-panel">
+              <p class="eyebrow">星门回响</p>
+              <h2>关卡完成</h2>
+              <p class="result-copy" id="clearCopy">晨曦森林的星火已经归位。</p>
+              <div class="result-grid">
+                <div><span>星火</span><strong id="clearShards">3 / 3</strong></div>
+                <div><span>剩余生命</span><strong id="clearHealth">5</strong></div>
+                <div><span>本局得分</span><strong id="clearScore">0</strong></div>
+              </div>
+              <div class="button-row">
+                <button class="btn btn-primary" id="nextButton" type="button">前往下一关</button>
+                <button class="btn btn-ghost" id="menuClearButton" type="button">返回标题</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen screen-over" id="screenGameOver">
+            <div class="panel compact-panel">
+              <p class="eyebrow">灯火将熄</p>
+              <h2>星火黯淡</h2>
+              <p class="result-copy">小焰倒下了，但灯笼仍在等待下一次出发。</p>
+              <div class="stat-line"><span>本次得分</span><strong id="overScore">0</strong></div>
+              <div class="button-stack">
+                <button class="btn btn-primary" id="retryButton" type="button">重试本关</button>
+                <button class="btn btn-ghost" id="menuOverButton" type="button">返回标题</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen screen-victory" id="screenVictory">
+            <div class="panel victory-panel">
+              <div class="victory-star" aria-hidden="true">✦</div>
+              <p class="eyebrow">三十九枚星火 · 长夜终明</p>
+              <h2>长夜重明</h2>
+              <p class="result-copy">暗影巨兽化作晨雾，星火重新照亮了整片天空。</p>
+              <div class="result-grid">
+                <div><span>最终得分</span><strong id="victoryScore">0</strong></div>
+                <div><span>历史最高</span><strong id="victoryBest">0</strong></div>
+                <div><span>收集星火</span><strong>39 / 39</strong></div>
+              </div>
+              <div class="button-row">
+                <button class="btn btn-primary" id="againButton" type="button">再次出发</button>
+                <button class="btn btn-ghost" id="menuVictoryButton" type="button">返回标题</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <div class="touch-controls" id="touchControls" aria-label="触控操作区">
+        <div class="touch-group touch-move">
+          <button class="touch-btn move-btn" type="button" data-action="left" aria-label="向左移动"><span>◀</span></button>
+          <button class="touch-btn move-btn" type="button" data-action="right" aria-label="向右移动"><span>▶</span></button>
+        </div>
+        <div class="touch-group touch-actions">
+          <button class="touch-btn action-btn dash-btn" type="button" data-action="dash" aria-label="冲刺"><span>冲</span></button>
+          <button class="touch-btn action-btn attack-btn" type="button" data-action="attack" aria-label="攻击"><span>斩</span></button>
+          <button class="touch-btn action-btn jump-btn" type="button" data-action="jump" aria-label="跳跃"><span>跳</span></button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
